@@ -1,0 +1,13 @@
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Python caches and local testing data
+__pycache__/
+*.py[cod]
+inquiries.json
+
+# Local environment
+.env
+.vscode/
+.idea/
