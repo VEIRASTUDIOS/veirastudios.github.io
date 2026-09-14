@@ -1754,23 +1754,373 @@
         /* ==========================================================================
        ===== VEIRA VOID FIGHTER ARCADE MINIGAME STYLES =====
        ========================================================================== */
+    /* ===== FULL SECTION SPACE FIGHTER STAGE ===== */
     #arcade-game {
-      background: #000000;
+      background: #06080d !important;
       position: relative;
       z-index: 5;
-      padding: 100px 0;
+      padding: 0;
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      min-height: 740px;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
-    .arcade-wrapper {
-      max-width: 980px;
-      margin: 0 auto;
-      background: #06080d;
-      border: 2px solid rgba(0, 229, 255, 0.4);
-      box-shadow: 0 0 50px rgba(0, 229, 255, 0.15), inset 0 0 30px rgba(0, 0, 0, 0.9);
+    #arcade-game .arcade-scanlines,
+    #arcade-game .arcade-crt-glow,
+    .space-fighter-transition-stage .arcade-scanlines,
+    .space-fighter-transition-stage .arcade-crt-glow {
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Full-section background pixel planet canvas */
+    #planet-cover-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+      image-rendering: pixelated;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Interactive full section wrapper */
+    .space-fighter-fullsection-wrap {
       position: relative;
-      overflow: hidden;
+      z-index: 5;
+      width: 100%;
+      max-width: 1240px;
+      padding: 90px 24px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Only a rectangle in middle saying PRESS TO PLAY */
+    .press-to-play-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 26px 58px;
+      background: rgba(3, 7, 18, 0.78);
+      border: 2px solid #00e5ff;
+      border-radius: 0px;
+      box-shadow: 0 0 50px rgba(0, 229, 255, 0.45), inset 0 0 32px rgba(0, 229, 255, 0.18);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 10;
+    }
+
+    .press-to-play-btn:hover {
+      border-color: #00ff9d;
+      box-shadow: 0 0 75px rgba(0, 255, 157, 0.7), inset 0 0 40px rgba(0, 255, 157, 0.28);
+      transform: scale(1.06);
+    }
+
+    .press-to-play-btn:active {
+      transform: scale(0.97);
+    }
+
+    .press-to-play-text {
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(17px, 2.5vw, 25px);
+      color: #ffffff;
+      letter-spacing: 3px;
+      text-shadow: 0 0 16px rgba(0, 229, 255, 0.95), 0 0 35px rgba(0, 229, 255, 0.6);
+      transition: color 0.25s ease, text-shadow 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .press-to-play-btn:hover .press-to-play-text {
+      color: #00ff9d;
+      text-shadow: 0 0 20px rgba(0, 255, 157, 1), 0 0 38px rgba(0, 255, 157, 0.85);
+    }
+
+
+    /* ===== 5-SECOND CINEMATIC HYPERSPACE ZOOM STAGE ===== */
+    .space-fighter-transition-stage {
+      display: none;
+      position: fixed !important;
+      inset: 0 !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 99999995 !important;
+      background: #06080d !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+      transition: opacity 0.2s linear;
+    }
+
+    #hyperspace-transition-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .hyperspace-hud-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 34px 44px;
+      font-family: 'Press Start 2P', monospace;
+      z-index: 10;
+    }
+
+    .hyperspace-top-telemetry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .telemetry-box {
+      background: rgba(3, 7, 15, 0.75);
+      border: 1px solid rgba(0, 229, 255, 0.45);
+      padding: 8px 16px;
+      font-size: 10.5px;
+      letter-spacing: 1px;
+      color: #00e5ff;
+      text-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
+    }
+
+    .hyperspace-center-gauge {
+      text-align: center;
+      margin: auto 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .crosshair-ring {
+      width: 140px;
+      height: 140px;
+      border: 1.5px dashed rgba(0, 229, 255, 0.65);
+      border-radius: 50%;
+      position: relative;
+      animation: spinCrosshair 6s infinite linear;
+      box-shadow: 0 0 30px rgba(0, 229, 255, 0.35);
+    }
+
+    @keyframes spinCrosshair {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .warp-velocity-readout {
+      font-size: clamp(20px, 3.6vw, 38px);
+      color: #ffffff;
+      letter-spacing: 3px;
+      text-shadow: 0 0 20px rgba(0, 255, 157, 0.95), 0 0 45px rgba(0, 229, 255, 0.85);
+    }
+
+    .warp-status-alert {
+      font-size: 11px;
+      color: #00ff9d;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 10px rgba(0, 255, 157, 0.8);
+      animation: pulseAlert 0.8s infinite alternate;
+    }
+
+    @keyframes pulseAlert {
+      0% { opacity: 0.6; transform: scale(0.98); }
+      100% { opacity: 1; transform: scale(1.02); }
+    }
+
+    .hyperspace-bottom-telemetry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .reentry-alert-box {
+      font-size: 10px;
+      color: #ffaa00;
+      background: rgba(255, 170, 0, 0.12);
+      border: 1px solid rgba(255, 170, 0, 0.45);
+      padding: 9px 18px;
+      letter-spacing: 1px;
+    }
+
+    .hyperspace-skip-prompt {
+      font-size: 9.5px;
+      color: rgba(255, 255, 255, 0.55);
+      letter-spacing: 1px;
+      pointer-events: auto;
+      cursor: pointer;
+      padding: 7px 14px;
+      border: 1px dashed rgba(255, 255, 255, 0.3);
+      transition: all 0.2s ease;
+    }
+    .hyperspace-skip-prompt:hover {
+      color: #ffffff;
+      border-color: #00ff9d;
+      background: rgba(0, 255, 157, 0.1);
+    }
+
+    /* ===== ARCADE WRAPPER FULLSCREEN MODE ===== */
+    .arcade-wrapper {
+      display: none;
+    }
+
+    .arcade-wrapper.fullscreen-mode {
+      display: flex !important;
+      position: fixed !important;
+      inset: 0 !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      margin: 0 !important;
+      z-index: 99999990 !important;
+      border: none !important;
+      border-radius: 0 !important;
+      flex-direction: column !important;
+      background: #06080d !important;
+      box-shadow: none !important;
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .arcade-wrapper.in-cinematic-zoom .arcade-top-bar,
+    .arcade-wrapper.in-cinematic-zoom .arcade-hud-row {
+      opacity: 0.12 !important;
+      pointer-events: none !important;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .arcade-wrapper:not(.in-cinematic-zoom) .arcade-top-bar,
+    .arcade-wrapper:not(.in-cinematic-zoom) .arcade-hud-row {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .arcade-wrapper.fullscreen-closing {
+      animation: fullscreenFadeOut 0.25s ease forwards !important;
+    }
+
+    @keyframes fullscreenFadeIn {
+      0% { opacity: 0; transform: scale(1.04); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes fullscreenFadeOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.96); }
+    }
+
+    .arcade-wrapper.fullscreen-mode .arcade-viewport {
+      flex: 1 1 auto;
+      height: 100% !important;
+      min-height: 0;
+      width: 100%;
+    }
+
+    .arcade-wrapper.fullscreen-mode #game-canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* EXIT DEMO RECTANGLE UNDER VOLUME SELECTION BAR - 50% OPACITY ALL BIG LETTERS */
+    .exit-game-demo-btn {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.5 !important;
+      background: rgba(4, 7, 16, 0.85) !important;
+      border: 1.5px solid rgba(255, 255, 255, 0.6) !important;
+      border-radius: 0px !important;
+      padding: 6px 14px !important;
+      color: #ffffff !important;
+      font-family: 'Press Start 2P', monospace !important;
+      font-size: 9.5px !important;
+      font-weight: 700 !important;
+      letter-spacing: 1.2px !important;
+      text-transform: uppercase !important;
+      cursor: pointer !important;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8) !important;
+      transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
+      white-space: nowrap !important;
+      margin-top: 2px !important;
+    }
+
+    .exit-game-demo-btn:hover {
+      opacity: 1.0 !important;
+      background: rgba(255, 42, 95, 0.9) !important;
+      border-color: #ff2a5f !important;
+      box-shadow: 0 0 25px rgba(255, 42, 95, 0.9) !important;
+      transform: scale(1.02) !important;
+    }
+
+    .exit-game-demo-btn:active {
+      transform: scale(0.97) !important;
+    }
+
+    /* Complete site navbar and scroll progress occlusion during Space Fighter fullscreen */
+    body.space-fighter-active {
+      overflow: hidden !important;
+    }
+    body.space-fighter-active #navbar,
+    body.space-fighter-active #scroll-progress,
+    body.space-fighter-active .mobile-menu,
+    body.space-fighter-active #vfx-pixel-canvas {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .space-fighter-fullsection-wrap {
+        padding: 50px 16px;
+      }
+      .space-fighter-cover {
+        padding: 32px 20px;
+      }
+      .cover-main-title {
+        font-size: 20px;
+        letter-spacing: 2px;
+      }
+      .cover-sub-prompt {
+        padding: 10px 20px;
+        font-size: 11.5px;
+      }
+      .exit-game-demo-btn {
+        top: 12px !important;
+        right: 12px !important;
+        padding: 6px 12px !important;
+        font-size: 9px !important;
+      }
+      .hyperspace-hud-overlay {
+        padding: 20px 18px;
+      }
     }
 
     .arcade-top-bar {
@@ -1897,8 +2247,15 @@
 
     .arcade-controls-hud {
       display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .arcade-audio-row {
+      display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
@@ -4137,6 +4494,138 @@
       text-align: center;
     }
 
+    /* Top Hero Impossible Tagline & White Contact Rectangle */
+    .hero-tagline-impossible {
+      font-family: var(--font-display);
+      font-size: clamp(14px, 2.0vw, 22px);
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin: 0 auto 16px auto;
+      text-align: center;
+      text-shadow: 0 0 20px rgba(0, 229, 255, 0.4), 0 2px 8px rgba(0, 0, 0, 0.8);
+    }
+
+    .hero-contact-rect {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ffffff;
+      background: rgba(8, 12, 22, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 12px;
+      padding: 16px 36px 18px 36px;
+      margin: 18px auto 36px auto;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.75), 0 0 25px rgba(255, 255, 255, 0.2);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .hero-contact-rect:hover {
+      border-color: #ffffff;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.85), 0 0 35px rgba(255, 255, 255, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .hero-contact-title {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.35em;
+      color: rgba(255, 255, 255, 0.95);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-contact-title::before,
+    .hero-contact-title::after {
+      content: '';
+      display: inline-block;
+      width: 28px;
+      height: 1.5px;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .hero-contact-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .hero-contact-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 11px 24px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1.5px solid rgba(255, 255, 255, 0.24);
+      color: #ffffff;
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+    .hero-contact-item:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.95);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
+    }
+    .hero-contact-item:active {
+      transform: translateY(0);
+    }
+
+    .hero-contact-item-email:hover {
+      border-color: #ea4335;
+      box-shadow: 0 0 20px rgba(234, 67, 53, 0.45);
+    }
+    .hero-contact-item-discord:hover {
+      border-color: #5865f2;
+      box-shadow: 0 0 20px rgba(88, 101, 242, 0.45);
+    }
+
+    .hero-contact-icon {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+    }
+    .hero-contact-divider {
+      width: 1.5px;
+      height: 34px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    @media (max-width: 600px) {
+      .hero-contact-rect {
+        padding: 12px 18px 14px 18px;
+        margin: 14px auto 28px auto;
+      }
+      .hero-contact-links {
+        gap: 12px;
+      }
+      .hero-contact-item {
+        padding: 8px 14px;
+        font-size: 13px;
+        gap: 10px;
+      }
+      .hero-contact-icon {
+        width: 26px;
+        height: 26px;
+      }
+      .hero-contact-divider {
+        height: 26px;
+      }
+    }
+
     /* ==========================================================================
        ===== FLOATING WHITE VEIRA LOGO & AMBIENT COSMIC PARTICLES =====
        ========================================================================== */
@@ -4845,7 +5334,7 @@
 
       <ul class="nav-links">
         <li><a href="#platforms">Platforms</a></li>
-        <li><a href="#arcade-game">Void Fighter</a></li>
+        <li><a href="#arcade-game">Space Fighter</a></li>
         <li><a href="#audi-rs6">3D Assets</a></li>
         <li><a href="#pixel-art">2D Pixel Art</a></li>
         <li><a href="#illustrations">Illustrations</a></li>
@@ -4866,7 +5355,7 @@
   <!-- Mobile Navigation -->
   <div class="mobile-menu" id="mobile-menu">
     <a href="#platforms">Platforms (Android / iOS / macOS / Windows)</a>
-    <a href="#arcade-game">Void Fighter (Play Live)</a>
+    <a href="#arcade-game">Space Fighter (Play Live)</a>
     <a href="#audi-rs6">3D Assets</a>
     <a href="#pixel-art">2D Pixel Art</a>
     <a href="#illustrations">Illustrations</a>
@@ -4881,12 +5370,30 @@
     <div class="container">
       <div class="hero-content">
         <h1 class="hero-title hero-studio-title reveal-item delay-1">VEIRA STUDIO</h1>
-        <p class="hero-subtitle hero-studio-sub reveal-item delay-2">LETS BUILD SOMETHING TOGETHER</p>
+        <div class="hero-tagline-impossible reveal-item delay-2">WE MAKE THE IMPOSSIBLE LOOK EASY</div>
 
         <!-- Floating White Veira Studio Logo -->
         <div class="veira-floating-emblem-wrap reveal-item delay-3">
           <div class="veira-emblem-glow-backing"></div>
           <img src="veira_emblem_transparent.png" alt="Veira Studio" class="veira-emblem-white-img" />
+        </div>
+
+        <!-- Top White Contact Rectangle (Email & Discord) UNDER VEIRA LOGO -->
+        <div class="hero-contact-rect reveal-item delay-3">
+          <div class="hero-contact-title">CONTACT</div>
+          <div class="hero-contact-links">
+            <!-- Left: Email -->
+            <a href="mailto:veira.studio7@gmail.com" class="hero-contact-item hero-contact-item-email" id="top-contact-email" title="Email Veira Studios (veira.studio7@gmail.com)">
+              <img src="gmail_icon.png" alt="Gmail" class="hero-contact-icon" />
+              <span>EMAIL</span>
+            </a>
+            <div class="hero-contact-divider"></div>
+            <!-- Right: Discord -->
+            <a href="https://discord.gg/54Bk5KYZ" target="_blank" rel="noopener noreferrer" class="hero-contact-item hero-contact-item-discord" id="top-contact-discord" title="Join Discord Community">
+              <img src="discord_icon.png" alt="Discord" class="hero-contact-icon" />
+              <span>DISCORD</span>
+            </a>
+          </div>
         </div>
 
         <div class="hero-actions reveal-item delay-4" style="margin-top: 12px; margin-bottom: 48px;">
@@ -5390,19 +5897,36 @@
 
   <!-- ===== ARCADE GAME SECTION (LIVE GAME DEV SHOWCASE) ===== -->
   <section id="arcade-game">
-    <div class="container">
-      <div class="reveal-item" style="text-align: center; max-width: 780px; margin: 0 auto 30px auto;">
-        <h2 class="section-title">VOID FIGHTER</h2>
-      </div>
+    <!-- Full-Section Background Pixel Planet & Twinkling Cosmos Canvas -->
+    <canvas id="planet-cover-canvas"></canvas>
+    <div class="arcade-scanlines"></div>
+    <div class="arcade-crt-glow"></div>
 
-      <div class="arcade-wrapper reveal-item">
-        <!-- Arcade Top Bar -->
-        <div class="arcade-top-bar">
-          <div class="arcade-title-tag">
-            <span>VOID FIGHTER</span>
-          </div>
-          <div>5 BOSSES</div>
-        </div>
+    <div class="space-fighter-fullsection-wrap">
+      <!-- Only a rectangle in middle saying PRESS TO PLAY -->
+      <div class="press-to-play-btn reveal-item" id="space-fighter-cover" role="button" tabindex="0" aria-label="Press to Play">
+        <span class="press-to-play-text">PRESS TO PLAY</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fullscreen Galaxy Zoom Stage -->
+  <div id="space-fighter-transition-stage" class="space-fighter-transition-stage">
+    <canvas id="hyperspace-transition-canvas"></canvas>
+    <div class="arcade-scanlines"></div>
+    <div class="arcade-crt-glow"></div>
+  </div>
+
+  <!-- Space Fighter Arcade Fullscreen Arena -->
+  <div class="arcade-wrapper" id="arcade-wrapper">
+
+    <!-- Arcade Top Bar -->
+    <div class="arcade-top-bar">
+      <div class="arcade-title-tag">
+        <span>SPACE FIGHTER</span>
+      </div>
+      <div>5 BOSSES // ESC TO EXIT</div>
+    </div>
 
         <!-- Arcade HUD Row -->
         <div class="arcade-hud-row">
@@ -5439,16 +5963,20 @@
             </div>
           </div>
 
-          <!-- Quick Controls: Audio Toggle & Dedicated Volume Control Slider -->
+          <!-- Quick Controls: Audio Toggle & Dedicated Volume Control Slider + EXIT GAME DEMO underneath -->
           <div class="arcade-controls-hud">
-            <button id="toggle-sound-btn" class="arcade-btn-toggle active" title="Toggle Sound (Mute/Unmute)">
-              <span id="sound-label">AUDIO: ON</span>
-            </button>
-            <div class="arcade-volume-wrap" id="arcade-vol-control" title="Adjust Volume Level">
-              <span class="vol-label">VOL:</span>
-              <input type="range" id="arcade-vol-slider" class="arcade-vol-slider" min="0" max="100" value="100" aria-label="Game Volume Slider">
-              <span id="arcade-vol-pct" class="vol-badge">100%</span>
+            <div class="arcade-audio-row">
+              <button id="toggle-sound-btn" class="arcade-btn-toggle active" title="Toggle Sound (Mute/Unmute)">
+                <span id="sound-label">AUDIO: ON</span>
+              </button>
+              <div class="arcade-volume-wrap" id="arcade-vol-control" title="Adjust Volume Level">
+                <span class="vol-label">VOL:</span>
+                <input type="range" id="arcade-vol-slider" class="arcade-vol-slider" min="0" max="100" value="100" aria-label="Game Volume Slider">
+                <span id="arcade-vol-pct" class="vol-badge">100%</span>
+              </div>
             </div>
+            <!-- Exit Demo Rectangle Under Volume Selection Bar -->
+            <button class="exit-game-demo-btn" id="exit-game-demo-btn" type="button" aria-label="Exit Game Demo">EXIT GAME DEMO</button>
           </div>
         </div>
 
@@ -5507,32 +6035,7 @@
             <div id="boss-warning-desc" class="warning-desc">COMMANDER INCOMING</div>
             <div class="pixel-warning-hazard">/// /// /// WARNING /// /// ///</div>
           </div>
-
-          <!-- Cinematic Story Intro Screen Overlay -->
-          <div class="arcade-overlay-screen hidden" id="game-intro-screen">
-            <div class="intro-story-box">
-              <div id="intro-line-1" class="intro-line">SECTOR 07 — THE GALAXY IS UNDER A MENACE</div>
-              <div id="intro-line-2" class="intro-line">CYBER-PIRATE ARMADAS ADVANCE ACROSS THE VOID...</div>
-              <div id="intro-line-3" class="intro-line">ONLY ONE FIGHTER CAN HALT THE TOTAL INVASION.</div>
-              <div id="intro-line-4" class="intro-line highlight">WILL YOU SAVE THE GALAXY FROM THE PIRATE SPACE?</div>
-            </div>
-
-            <!-- Intro End Launch Menu: Player MUST select PLAY to exit intro and launch into combat -->
-            <div id="intro-play-menu" class="intro-play-menu hidden" style="margin-top: 24px; text-align: center;">
-              <div class="intro-menu-prompt" style="font-family: 'Press Start 2P', monospace; font-size: 10px; color: #00ff9d; margin-bottom: 12px; text-shadow: 0 0 10px rgba(0, 255, 157, 0.8); letter-spacing: 1px;">
-                [ PILOT READY // SELECT PLAY TO ENGAGE ]
-              </div>
-              <button id="intro-play-btn" class="pixel-btn-green" style="padding: 14px 44px; font-size: 14px; box-shadow: 0 0 25px rgba(0, 255, 157, 0.8); cursor: pointer; letter-spacing: 2px;">PLAY</button>
-            </div>
-
-            <button id="skip-intro-btn" class="pixel-btn-green" style="margin-top: 16px; padding: 8px 18px; font-size: 9px; background: rgba(16, 185, 129, 0.2); border: 1px dashed #00ff9d;">SKIP INTRO</button>
-          </div>
-
-          <!-- Start Screen Overlay: Simple Pixel Green Rectangle Play Game -->
-          <div class="arcade-overlay-screen" id="game-start-screen">
-            <div class="game-logo-title">VOID FIGHTER</div>
-            <button id="start-game-btn" class="pixel-btn-green">PLAY GAME</button>
-          </div>
+          <!-- Intro screens removed for smooth direct transition into combat -->
 
           <!-- Game Over Screen Overlay -->
           <div class="arcade-overlay-screen hidden" id="game-over-screen">
@@ -5550,12 +6053,11 @@
 
         <!-- Arcade Bottom Status -->
         <div class="arcade-bottom-bar">
-          <div>VOID FIGHTER</div>
-          <div>60 FPS RETRO COMBAT</div>
+          <div>SPACE FIGHTER</div>
+          <div>60 FPS RETRO COMBAT // FULLSCREEN DEMO</div>
         </div>
       </div>
-    </div>
-  </section>
+  </div>
 
   <!-- ===== 3D AUDI RS6 AVANT SHOWCASE SECTION ===== -->
   <section id="audi-rs6" class="section">
@@ -6777,7 +7279,7 @@
           <h4 style="font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; color: var(--text-main);">Capabilities</h4>
           <ul style="display: flex; flex-direction: column; gap: 8px; font-family: var(--font-mono); font-size: 12.5px; color: var(--text-muted);">
             <li><a href="#platforms">Platforms We Build For</a></li>
-            <li><a href="#arcade-game">Void Fighter Game</a></li>
+            <li><a href="#arcade-game">Space Fighter Game</a></li>
             <li><a href="#audi-rs6">Audi RS6 &amp; 3D Models</a></li>
             <li><a href="#pixel-art">2D Pixel Art &amp; VFX</a></li>
             <li><a href="#illustrations">Illustrations Showcase</a></li>
@@ -6807,7 +7309,7 @@
       </div>
 
       <div style="border-top: 1px solid var(--border-subtle); padding-top: 24px; text-align: center; font-family: var(--font-mono); font-size: 12px; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.04em;">
-        © 2026 VEIRA STUDIOS. ALL RIGHTS RESERVED. ARCHITECTURAL BLACK BRUTALIST UI.
+        © 2026 VEIRA STUDIOS. ALL RIGHTS RESERVED.
       </div>
     </div>
   </footer>
@@ -6978,6 +7480,11 @@
     if (hamburgerBtn && mobileMenu) {
       hamburgerBtn.addEventListener('click', () => {
         mobileMenu.classList.toggle('open');
+      });
+      mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          mobileMenu.classList.remove('open');
+        });
       });
     }
 
@@ -7328,6 +7835,21 @@
     const viewport = document.getElementById('game-viewport');
     if (!canvas || !viewport) return;
 
+    const arcadeWrapper = document.getElementById('arcade-wrapper');
+    const arcadeSection = document.getElementById('arcade-game');
+    const spaceFighterCover = document.getElementById('space-fighter-cover');
+    const exitGameDemoBtn = document.getElementById('exit-game-demo-btn');
+    const planetCanvas = document.getElementById('planet-cover-canvas');
+
+    const transitionStage = document.getElementById('space-fighter-transition-stage');
+    const transitionCanvas = document.getElementById('hyperspace-transition-canvas');
+    const warpVelocityReadout = document.getElementById('warp-velocity-readout');
+    const warpStatusAlert = document.getElementById('warp-status-alert');
+    const reentryAlertText = document.getElementById('reentry-alert-text');
+    const hyperspaceSkipBtn = document.getElementById('hyperspace-skip-btn');
+    const siteNavbar = document.getElementById('navbar');
+    const siteScrollProgress = document.getElementById('scroll-progress');
+
     const ctx = canvas.getContext('2d');
     const scoreValEl = document.getElementById('game-score-val');
     const bossStageValEl = document.getElementById('game-wave-val');
@@ -7385,6 +7907,14 @@
     let veiraImgLoaded = false;
     veiraEmblemImg.onload = function() {
       veiraImgLoaded = true;
+    };
+
+    // Load Veira Pixel 24 Logo for Giant Allied Carrier Mothership
+    const veiraPixel24Img = new Image();
+    veiraPixel24Img.src = 'veira_pixel_24.png';
+    let veiraPixel24Loaded = false;
+    veiraPixel24Img.onload = function() {
+      veiraPixel24Loaded = true;
     };
 
     // =======================================================
@@ -8231,8 +8761,8 @@
 
     function resizeGame() {
       const rect = viewport.getBoundingClientRect();
-      const rw = Math.max(300, Math.floor(rect.width));
-      const rh = Math.max(340, Math.floor(rect.height || 520));
+      const rw = Math.max(300, Math.floor(rect.width || window.innerWidth));
+      const rh = Math.max(340, Math.floor(rect.height || (window.innerHeight - 110)));
       canvas.width = rw;
       canvas.height = rh;
       W = rw;
@@ -8700,6 +9230,8 @@
     let score = 0;
     let kills = 0;
     let screenShake = 0;
+    let playerEntranceTimer = 0;
+    let playerEntranceTotal = 45;
 
     // Player State (5 Hearts = 5 HP)
     let player = {
@@ -8887,6 +9419,27 @@
     let scorePopups = [];
     let bgStars = [];
 
+    // Allied Carrier Mothership & Escort Support Jets
+    let mothershipTriggered = false;
+    let alliedMothership = {
+      active: false,
+      incoming: false,
+      phase: 'inactive', // 'entering', 'gate_opening', 'deploying_jets', 'supersonic_blast', 'departed'
+      x: 0,
+      y: 0,
+      targetX: 0,
+      targetY: 0,
+      width: 78,
+      height: 310,
+      vy: 0,
+      timer: 0,
+      gateProgress: 0, // 0.0 closed to 1.0 open
+      jetsLaunched: false,
+      supersonicTrail: [],
+      exhaustParticles: []
+    };
+    let supportJets = [];
+
     // Background Stars
     function initBgStars() {
       bgStars = [];
@@ -8956,14 +9509,20 @@
       }
     }
 
-    function resetGame() {
+    function resetGame(preserveStars = false) {
       resizeGame();
-      initBgStars();
+      if (!preserveStars || !bgStars || bgStars.length === 0) {
+        initBgStars();
+      }
       player.x = W / 2;
-      player.y = H - 80;
+      player.y = H + 70;
+      playerEntranceTimer = 45;
+      playerEntranceTotal = 45;
+      mousePos.x = W / 2;
+      mousePos.y = H + 70;
       player.hp = 5;
       player.maxHp = 5;
-      player.invulnTimer = 0;
+      player.invulnTimer = 50;
       player.shootCooldown = 0;
       player.rocketCooldown = 0;
 
@@ -8993,6 +9552,15 @@
       powerups = [];
       scorePopups = [];
 
+      mothershipTriggered = false;
+      alliedMothership.active = false;
+      alliedMothership.incoming = false;
+      alliedMothership.phase = 'inactive';
+      alliedMothership.gateProgress = 0;
+      alliedMothership.supersonicTrail = [];
+      alliedMothership.exhaustParticles = [];
+      supportJets = [];
+
       shipTier = 0;
       autoMissileCooldown = 0;
       player.upgradeAura = 0;
@@ -9011,12 +9579,12 @@
       if (bossWarningScreen) bossWarningScreen.classList.add('hidden');
     }
 
-    function startGame() {
+    function startGame(preserveStars = false) {
       unlockAudio();
-      resetGame();
+      resetGame(preserveStars);
       isPlaying = true;
-      startScreen.classList.add('hidden');
-      gameOverScreen.classList.add('hidden');
+      if (startScreen) startScreen.classList.add('hidden');
+      if (gameOverScreen) gameOverScreen.classList.add('hidden');
       const introScreen = document.getElementById('game-intro-screen');
       if (introScreen) introScreen.classList.add('hidden');
       playGameStartJingle();
@@ -9270,7 +9838,8 @@
     // =======================================================
     let alienSpawnTimer = 0;
     function spawnAliens() {
-      if (boss.active) return;
+      // No enemies spawn while a boss is active, or while the friendly mothership is incoming, active, or departing!
+      if (boss.active || alliedMothership.incoming || alliedMothership.active || (alliedMothership.phase !== 'inactive' && alliedMothership.phase !== 'departed')) return;
 
       alienSpawnTimer++;
       const spawnInterval = Math.max(28, 64 - currentBossIndex * 6);
@@ -9610,6 +10179,12 @@
     const keys = {};
     window.addEventListener('keydown', function(e) {
       unlockAudio();
+      if (e.key === 'Escape') {
+        if (arcadeWrapper && arcadeWrapper.classList.contains('fullscreen-mode')) {
+          closeFullscreenGame();
+          return;
+        }
+      }
       keys[e.key] = true;
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
         if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
@@ -9636,9 +10211,25 @@
             playSound('hurt');
             addScorePopup('INFINITE WIN: OFF', player.x - 70, player.y - 40, '#ff2a5f');
           }
+        } else if (cheatBuffer.endsWith('CARRIER') || cheatBuffer.endsWith('MOTHERSHIP')) {
+          cheatBuffer = '';
+          alliedMothership.incoming = true;
+          alienShips = [];
+          alienLasers = [];
+          alienSpawnTimer = 0;
+          startAlliedMothershipCinematic();
         }
       }
     });
+
+    window.testMothershipSequence = function() {
+      if (!isPlaying) startGame();
+      alliedMothership.incoming = true;
+      alienShips = [];
+      alienLasers = [];
+      alienSpawnTimer = 0;
+      startAlliedMothershipCinematic();
+    };
 
     window.addEventListener('keyup', function(e) {
       keys[e.key] = false;
@@ -9753,35 +10344,47 @@
         }
       }
 
-      // 3. Player Movement Logic
-      let targetX = mousePos.x;
-      let targetY = mousePos.y;
-
-      let kx = 0;
-      let ky = 0;
-      if (keys['ArrowLeft'] || keys['a'] || keys['A']) kx -= 1;
-      if (keys['ArrowRight'] || keys['d'] || keys['D']) kx += 1;
-      if (keys['ArrowUp'] || keys['w'] || keys['W']) ky -= 1;
-      if (keys['ArrowDown'] || keys['s'] || keys['S']) ky += 1;
-
-      if (kx !== 0 || ky !== 0) {
-        player.x += kx * player.speed;
-        player.y += ky * player.speed;
+      // 3. Player Movement & Entrance Logic
+      if (playerEntranceTimer > 0) {
+        playerEntranceTimer--;
+        const t = 1.0 - (playerEntranceTimer / playerEntranceTotal);
+        const ease = 1 - Math.pow(1 - t, 3);
+        const targetStartY = H - 85;
+        player.x = W / 2;
+        player.y = (H + 70) + (targetStartY - (H + 70)) * ease;
         mousePos.x = player.x;
         mousePos.y = player.y;
+        player.invulnTimer = Math.max(player.invulnTimer, 30);
       } else {
-        player.x += (targetX - player.x) * 0.18;
-        player.y += (targetY - player.y) * 0.18;
-      }
+        let targetX = mousePos.x;
+        let targetY = mousePos.y;
 
-      player.x = Math.max(20, Math.min(W - 20, player.x));
-      player.y = Math.max(30, Math.min(H - 30, player.y));
+        let kx = 0;
+        let ky = 0;
+        if (keys['ArrowLeft'] || keys['a'] || keys['A']) kx -= 1;
+        if (keys['ArrowRight'] || keys['d'] || keys['D']) kx += 1;
+        if (keys['ArrowUp'] || keys['w'] || keys['W']) ky -= 1;
+        if (keys['ArrowDown'] || keys['s'] || keys['S']) ky += 1;
+
+        if (kx !== 0 || ky !== 0) {
+          player.x += kx * player.speed;
+          player.y += ky * player.speed;
+          mousePos.x = player.x;
+          mousePos.y = player.y;
+        } else {
+          player.x += (targetX - player.x) * 0.18;
+          player.y += (targetY - player.y) * 0.18;
+        }
+
+        player.x = Math.max(20, Math.min(W - 20, player.x));
+        player.y = Math.max(30, Math.min(H - 30, player.y));
+      }
 
       if (player.shootCooldown > 0) player.shootCooldown--;
       if (player.rocketCooldown > 0) player.rocketCooldown--;
       if (player.invulnTimer > 0) player.invulnTimer--;
 
-      if (manualFireActive) {
+      if (manualFireActive && playerEntranceTimer <= 0) {
         handleManualShooting();
       }
 
@@ -9795,8 +10398,8 @@
         }
       }
 
-      // 5. Boss Progression Trigger
-      if (!boss.active && kills >= nextBossKillThreshold && currentBossIndex < BOSS_CONFIGS.length) {
+      // 5. Boss Progression Trigger (cannot spawn during mothership sequence)
+      if (!boss.active && !alliedMothership.incoming && !alliedMothership.active && (alliedMothership.phase === 'inactive' || alliedMothership.phase === 'departed') && kills >= nextBossKillThreshold && currentBossIndex < BOSS_CONFIGS.length) {
         triggerBossSpawn(currentBossIndex);
       }
 
@@ -10158,6 +10761,10 @@
         }
       }
 
+      // 12b. Allied Carrier Mothership & Support Escort Jets Update
+      updateAlliedMothership();
+      updateSupportJets();
+
       // 13. Powerups
       for (let i = powerups.length - 1; i >= 0; i--) {
         const p = powerups[i];
@@ -10497,6 +11104,19 @@
         addScorePopup(`SHIP UPGRADED: TIER ${shipTier} // ${newMissiles} AUTO-MISSILES!`, player.x - 140, player.y - 60, '#ffd700');
         autoMissileCooldown = 90; // Smooth 1.5s delay so there is no simultaneous frame drop!
 
+        // FIRST BOSS ALIEN DEFEATED: GIANT ALLIED MOTHERSHIP PASSES BY WITH VEIRA LOGO, OPENS GATE, AND DEPLOYS 2 SUPPORT JETS!
+        if (boss.stage === 1 && !mothershipTriggered) {
+          mothershipTriggered = true;
+          alliedMothership.incoming = true;
+          // Clear any leftover alien ships and lasers from the arena so no enemies can spawn or shoot
+          alienShips = [];
+          alienLasers = [];
+          alienSpawnTimer = 0;
+          setTimeout(() => {
+            startAlliedMothershipCinematic();
+          }, 1100);
+        }
+
         if (isFinalBoss) {
           addScorePopup('FINAL ENEMY DEFEATED! YOU WIN!', W / 2 - 160, H / 2 + 28, '#ffd700');
           setTimeout(() => {
@@ -10507,6 +11127,756 @@
           nextBossKillThreshold = kills + 8 + currentBossIndex * 2;
           if (bossStageValEl) bossStageValEl.textContent = `${currentBossIndex + 1} / 5`;
         }
+      }
+    }
+
+    // =======================================================
+    // GIANT ALLIED CARRIER MOTHERSHIP & ESCORT WINGMEN SYSTEM
+    // =======================================================
+    function startAlliedMothershipCinematic() {
+      alliedMothership.incoming = false;
+      alliedMothership.active = true;
+      alliedMothership.phase = 'entering';
+      alliedMothership.width = 78;
+      alliedMothership.height = 310;
+      // Clear any enemies or lasers so arena is 100% clear until mothership departs
+      alienShips = [];
+      alienLasers = [];
+      alienSpawnTimer = 0;
+      // Appears from bottom-right below the screen
+      alliedMothership.x = Math.round(W * 0.82);
+      alliedMothership.y = H + 280;
+      // Glides up and stops at midway vertically
+      alliedMothership.targetX = Math.round(Math.min(W - 65, Math.max(W * 0.65, 240)));
+      alliedMothership.targetY = Math.round(H * 0.50);
+      alliedMothership.vy = 0;
+      alliedMothership.timer = 0;
+      alliedMothership.gateProgress = 0;
+      alliedMothership.jetsLaunched = false;
+      alliedMothership.supersonicTrail = [];
+      alliedMothership.exhaustParticles = [];
+
+      playSound('boss_warning');
+      screenShake = 12;
+      addScorePopup('// ALLIED BATTLECRUISER EXETER INCOMING //', W / 2 - 145, 45, '#00e5ff');
+    }
+
+    function spawnSupportJets(startX, startY) {
+      supportJets = [
+        {
+          id: 0,
+          name: 'WINGMAN ALPHA',
+          x: startX - 12,
+          y: startY,
+          vx: -3.4,
+          vy: 2.8,
+          targetOffsetX: -46,
+          targetOffsetY: 16,
+          hp: 3,
+          maxHp: 3,
+          flashTimer: 0,
+          shootTimer: 8,
+          deployed: false,
+          pixelSize: 2.2
+        },
+        {
+          id: 1,
+          name: 'WINGMAN BETA',
+          x: startX + 12,
+          y: startY,
+          vx: 3.4,
+          vy: 2.8,
+          targetOffsetX: 46,
+          targetOffsetY: 16,
+          hp: 3,
+          maxHp: 3,
+          flashTimer: 0,
+          shootTimer: 18,
+          deployed: false,
+          pixelSize: 2.2
+        }
+      ];
+      playSound('ship_upgrade');
+      addScorePopup('// 2X ALLIED FIGHTER JETS DEPLOYED //', W / 2 - 120, H / 2, '#00ff9d');
+    }
+
+    function updateAlliedMothership() {
+      if (!alliedMothership.active && alliedMothership.supersonicTrail.length === 0 && (!alliedMothership.exhaustParticles || alliedMothership.exhaustParticles.length === 0)) return;
+
+      const m = alliedMothership;
+      m.timer++;
+
+      if (m.phase === 'entering') {
+        // Appears from bottom-right and glides smoothly up to midway
+        const dx = m.targetX - m.x;
+        const dy = m.targetY - m.y;
+        m.x += dx * 0.042;
+        m.y += dy * 0.042;
+
+        // Subtle cruising thruster sparks
+        if (m.timer % 3 === 0 && m.exhaustParticles) {
+          const cy = m.y;
+          const offsets = [-27, -9, 9, 27];
+          for (let ox of offsets) {
+            m.exhaustParticles.push({
+              x: m.x + ox + (Math.random() - 0.5) * 3,
+              y: cy + 155,
+              vx: (Math.random() - 0.5) * 1.5,
+              vy: Math.random() * 2.5 + 2,
+              size: Math.random() * 3 + 2,
+              color: Math.random() < 0.5 ? '#00e5ff' : '#cffafe',
+              alpha: 0.7
+            });
+          }
+        }
+
+        // Stops at midway
+        if (Math.hypot(dx, dy) < 1.2) {
+          m.x = m.targetX;
+          m.y = m.targetY;
+          m.phase = 'gate_opening';
+          m.timer = 0;
+          playSound('laser');
+          addScorePopup('// HANGAR BAY PORTONE OPENING //', m.x - 110, m.y - 120, '#00ff9d');
+        }
+      } else if (m.phase === 'gate_opening') {
+        // Hangar portone slides open
+        m.gateProgress = Math.min(1.0, m.gateProgress + 0.045);
+        if (m.gateProgress >= 1.0) {
+          m.phase = 'deploying_jets';
+          m.timer = 0;
+          spawnSupportJets(m.x, m.y + 14);
+        }
+      } else if (m.phase === 'deploying_jets') {
+        // "appena i jet escono dal portone la nave madre attiva i motori a razzo al masimo e va verso lalto a velocita supersonica"
+        if (m.timer > 18) {
+          m.phase = 'supersonic_blast';
+          m.timer = 0;
+          m.vy = -7.0;
+          screenShake = 26;
+          playSound('rocket');
+          playSound('explode');
+          addScorePopup('// MAX ROCKET THRUST // SUPERSONIC ESCAPE //', m.x - 140, m.y - 140, '#00e5ff');
+        }
+      } else if (m.phase === 'supersonic_blast') {
+        // Portone closes rapidly
+        m.gateProgress = Math.max(0, m.gateProgress - 0.15);
+
+        // Rocket engines at maximum! Accelerates upward at supersonic speed
+        m.vy = Math.min(m.vy * 1.34 - 3.8, -80);
+        m.y += m.vy;
+
+        screenShake = Math.max(screenShake, 8);
+
+        // Supersonic afterimages
+        m.supersonicTrail.push({
+          x: m.x,
+          y: m.y,
+          width: m.width,
+          height: m.height,
+          alpha: 1.0
+        });
+
+        // Blazing rocket exhaust sparks and supersonic smoke blasting downwards
+        if (m.exhaustParticles) {
+          const cy = m.y;
+          const offsets = [-27, -9, 9, 27];
+          for (let ox of offsets) {
+            for (let p = 0; p < 3; p++) {
+              m.exhaustParticles.push({
+                x: m.x + ox + (Math.random() - 0.5) * 8,
+                y: cy + 155 + Math.random() * 45,
+                vx: (Math.random() - 0.5) * 4,
+                vy: Math.random() * 16 + 14,
+                size: Math.random() * 5 + 3,
+                color: Math.random() < 0.4 ? '#ffffff' : (Math.random() < 0.7 ? '#ffdd00' : '#ff4400'),
+                alpha: 1.0
+              });
+            }
+          }
+        }
+
+        if (m.y < -380) {
+          m.active = false;
+          m.incoming = false;
+          m.phase = 'departed';
+          alienSpawnTimer = 0; // Enemies only begin wave countdown after the friendly mothership has fully departed!
+        }
+      }
+
+      // Fade out supersonic after-images
+      for (let t = m.supersonicTrail.length - 1; t >= 0; t--) {
+        m.supersonicTrail[t].alpha -= 0.08;
+        if (m.supersonicTrail[t].alpha <= 0) {
+          m.supersonicTrail.splice(t, 1);
+        }
+      }
+
+      // Update exhaust particles
+      if (m.exhaustParticles) {
+        for (let p = m.exhaustParticles.length - 1; p >= 0; p--) {
+          const ep = m.exhaustParticles[p];
+          ep.x += ep.vx;
+          ep.y += ep.vy;
+          ep.alpha -= 0.035;
+          if (ep.alpha <= 0 || ep.y > H + 60) {
+            m.exhaustParticles.splice(p, 1);
+          }
+        }
+      }
+    }
+
+    function updateSupportJets() {
+      for (let i = supportJets.length - 1; i >= 0; i--) {
+        const j = supportJets[i];
+        if (j.flashTimer > 0) j.flashTimer--;
+
+        // Launch trajectory banking into formation
+        if (!j.deployed) {
+          j.x += j.vx;
+          j.y += j.vy;
+          j.vx *= 0.94;
+          j.vy *= 0.94;
+          if (Math.hypot(j.vx, j.vy) < 0.4) {
+            j.deployed = true;
+          }
+        } else {
+          // Escort formation with smooth lerp physics
+          const tx = player.x + j.targetOffsetX;
+          const ty = player.y + j.targetOffsetY;
+          j.x += (tx - j.x) * 0.15;
+          j.y += (ty - j.y) * 0.15;
+        }
+
+        // Loyal assistance fire against enemies
+        j.shootTimer--;
+        if (j.shootTimer <= 0 && (alienShips.length > 0 || boss.active)) {
+          j.shootTimer = 18; // ~3.3 bursts per sec
+          playSound('laser');
+
+          const laserColor = (j.id === 0) ? '#00e5ff' : '#00ff9d';
+          playerLasers.push({
+            x: j.x - 6,
+            y: j.y - 4,
+            vx: 0,
+            vy: -11,
+            width: 2.5,
+            height: 12,
+            color: laserColor
+          });
+          playerLasers.push({
+            x: j.x + 6,
+            y: j.y - 4,
+            vx: 0,
+            vy: -11,
+            width: 2.5,
+            height: 12,
+            color: laserColor
+          });
+        }
+
+        // Alien Lasers hit Support Jet
+        for (let k = alienLasers.length - 1; k >= 0; k--) {
+          const al = alienLasers[k];
+          if (Math.hypot(al.x - j.x, al.y - j.y) < 15) {
+            alienLasers.splice(k, 1);
+            j.hp--;
+            j.flashTimer = 8;
+            playSound('hurt');
+            spawnExplosion(j.x, j.y, '#ff2a5f', 6);
+            break;
+          }
+        }
+
+        // Alien Ships collide with Support Jet
+        for (let k = alienShips.length - 1; k >= 0; k--) {
+          const a = alienShips[k];
+          if (Math.hypot(a.x - j.x, a.y - j.y) < 18) {
+            j.hp--;
+            j.flashTimer = 8;
+            playSound('hurt');
+            a.hp -= 2;
+            spawnExplosion(j.x, j.y, '#ffd700', 8);
+            if (a.hp <= 0) {
+              handleAlienDestroyed(a, k);
+            }
+            break;
+          }
+        }
+
+        // If they take 3x damage they explode!
+        if (j.hp <= 0) {
+          spawnExplosion(j.x, j.y, '#ff8800', 22);
+          spawnExplosion(j.x, j.y, '#00e5ff', 16);
+          screenShake = 16;
+          playSound('explode');
+          addScorePopup(`${j.name} DESTROYED!`, j.x - 65, j.y - 20, '#ff2a5f');
+          supportJets.splice(i, 1);
+        }
+      }
+    }
+
+    function drawAlliedMothership(ctx) {
+      if (!alliedMothership.active && alliedMothership.supersonicTrail.length === 0 && (!alliedMothership.exhaustParticles || alliedMothership.exhaustParticles.length === 0)) return;
+
+      const m = alliedMothership;
+
+      // 1. Supersonic Exhaust Particles
+      if (m.exhaustParticles) {
+        for (let p = 0; p < m.exhaustParticles.length; p++) {
+          const ep = m.exhaustParticles[p];
+          ctx.save();
+          ctx.globalAlpha = ep.alpha;
+          ctx.fillStyle = ep.color;
+          ctx.fillRect(Math.floor(ep.x - ep.size / 2), Math.floor(ep.y), ep.size, ep.size * 1.5);
+          ctx.restore();
+        }
+      }
+
+      // 2. Supersonic Motion Blur & After-Images
+      for (let t = 0; t < m.supersonicTrail.length; t++) {
+        const tr = m.supersonicTrail[t];
+        ctx.save();
+        ctx.globalAlpha = tr.alpha * 0.35;
+        ctx.fillStyle = '#00e5ff';
+        ctx.fillRect(tr.x - tr.width / 2, tr.y - tr.height / 2, tr.width, tr.height);
+        ctx.restore();
+      }
+
+      if (!m.active) return;
+
+      ctx.save();
+      const cx = Math.floor(m.x);
+      const cy = Math.floor(m.y);
+      const isBlasting = (m.phase === 'supersonic_blast');
+
+      // 3. FOUR MASSIVE INDUSTRIAL ROCKET ENGINE PLUMES (Directly underneath the 4 bells)
+      const rocketCenters = [cx - 27, cx - 9, cx + 9, cx + 27];
+      const plumeBaseY = cy + 155;
+
+      if (isBlasting) {
+        // MAXIMUM ROCKET THRUST: Colossal supersonic rocket plumes!
+        const flameLen = 250 + Math.floor(Math.random() * 50);
+
+        // Mach Cone / Sonic Shockwave Rings
+        const shockRadius = 35 + (m.timer * 4) % 30;
+        ctx.strokeStyle = 'rgba(0, 229, 255, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(cx, plumeBaseY + 30, shockRadius * 1.4, shockRadius * 0.5, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        for (let i = 0; i < rocketCenters.length; i++) {
+          const rx = rocketCenters[i];
+          const jitter = (Math.random() - 0.5) * 2;
+          const pLen = flameLen + (i % 2 === 0 ? 20 : -10) + Math.random() * 20;
+
+          // Layer 1: Outer Turbulent Hypergolic Flame (Orange-Red)
+          const gradOuter = ctx.createLinearGradient(rx, plumeBaseY, rx, plumeBaseY + pLen);
+          gradOuter.addColorStop(0, '#ff4500');
+          gradOuter.addColorStop(0.3, '#ff8c00');
+          gradOuter.addColorStop(0.7, '#ff3300');
+          gradOuter.addColorStop(1, 'rgba(255, 0, 0, 0)');
+          ctx.fillStyle = gradOuter;
+          ctx.beginPath();
+          ctx.moveTo(rx - 8, plumeBaseY);
+          ctx.lineTo(rx + 8, plumeBaseY);
+          ctx.lineTo(rx + 14 + jitter, plumeBaseY + pLen * 0.6);
+          ctx.lineTo(rx, plumeBaseY + pLen);
+          ctx.lineTo(rx - 14 + jitter, plumeBaseY + pLen * 0.6);
+          ctx.closePath();
+          ctx.fill();
+
+          // Layer 2: Glowing Solar Yellow Core
+          ctx.fillStyle = '#ffd700';
+          ctx.beginPath();
+          ctx.moveTo(rx - 5, plumeBaseY);
+          ctx.lineTo(rx + 5, plumeBaseY);
+          ctx.lineTo(rx + 8, plumeBaseY + pLen * 0.45);
+          ctx.lineTo(rx, plumeBaseY + pLen * 0.8);
+          ctx.lineTo(rx - 8, plumeBaseY + pLen * 0.45);
+          ctx.closePath();
+          ctx.fill();
+
+          // Layer 3: Blinding Laser-White Supersonic Core
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.moveTo(rx - 2.5, plumeBaseY);
+          ctx.lineTo(rx + 2.5, plumeBaseY);
+          ctx.lineTo(rx + 3, plumeBaseY + pLen * 0.3);
+          ctx.lineTo(rx, plumeBaseY + pLen * 0.55);
+          ctx.lineTo(rx - 3, plumeBaseY + pLen * 0.3);
+          ctx.closePath();
+          ctx.fill();
+
+          // Layer 4: Supersonic Shock Diamonds (Mach Diamonds along the plume)
+          const numDiamonds = 4;
+          for (let d = 1; d <= numDiamonds; d++) {
+            const dy = plumeBaseY + (d * pLen * 0.16);
+            const dSize = Math.max(2, 6 - d);
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(rx, dy - dSize * 1.5);
+            ctx.lineTo(rx + dSize, dy);
+            ctx.lineTo(rx, dy + dSize * 1.5);
+            ctx.lineTo(rx - dSize, dy);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(0, 229, 255, 0.7)';
+            ctx.fillRect(rx - dSize * 1.2, dy - 1, dSize * 2.4, 2);
+          }
+
+          // Throat Ionization Ring at Nozzle Exit
+          ctx.fillStyle = '#00e5ff';
+          ctx.fillRect(rx - 7, plumeBaseY - 2, 14, 4);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(rx - 4, plumeBaseY - 1, 8, 2);
+        }
+      } else {
+        // Idling / Cruising Thruster Glow (subtle blue/white pilot flame)
+        for (let i = 0; i < rocketCenters.length; i++) {
+          const rx = rocketCenters[i];
+          const idleH = 10 + Math.floor(Math.sin((gameTick + i * 8) * 0.5) * 4);
+          ctx.fillStyle = 'rgba(0, 229, 255, 0.75)';
+          ctx.fillRect(rx - 4, plumeBaseY, 8, idleH);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(rx - 2, plumeBaseY, 4, idleH * 0.55);
+        }
+      }
+
+      // 4. MAIN BATTLECRUISER HULL (EXACT HARD SCI-FI EXETER DESIGN FROM USER'S IMAGE)
+
+      // (A) Bow Antenna Spire (Top-Left asymmetric mast, cy - 176 to cy - 155)
+      ctx.fillStyle = '#64748b';
+      ctx.fillRect(cx - 18, cy - 174, 2, 20);
+      ctx.fillRect(cx - 20, cy - 168, 6, 1);
+      ctx.fillRect(cx - 21, cy - 162, 8, 1.5);
+      // Pulsing Nav Beacon at spire tip
+      const beaconOn = Math.floor(gameTick / 12) % 2 === 0;
+      ctx.fillStyle = beaconOn ? '#ff2a5f' : '#334155';
+      ctx.fillRect(cx - 19, cy - 176, 4, 3);
+      if (beaconOn) {
+        ctx.fillStyle = 'rgba(255, 42, 95, 0.4)';
+        ctx.fillRect(cx - 21, cy - 178, 8, 7);
+      }
+
+      // (B) Bow / Command Superstructure (cy - 155 to cy - 115, width 48px)
+      // Base off-white ceramic armor
+      ctx.fillStyle = '#f1f5f9';
+      ctx.beginPath();
+      ctx.moveTo(cx - 24, cy - 155);
+      ctx.lineTo(cx + 14, cy - 155);
+      ctx.lineTo(cx + 24, cy - 146); // Stepped chamfer on right
+      ctx.lineTo(cx + 24, cy - 115);
+      ctx.lineTo(cx - 24, cy - 115);
+      ctx.closePath();
+      ctx.fill();
+
+      // Shadowed bevels and panel grooves
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillRect(cx - 22, cy - 153, 20, 36);
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(cx - 24, cy - 155, 48, 40);
+
+      // Dark observation bridge window slit
+      ctx.fillStyle = '#090e1a';
+      ctx.fillRect(cx - 18, cy - 146, 32, 6);
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(cx - 16, cy - 145, 12, 4);
+      ctx.fillStyle = '#00e5ff';
+      ctx.fillRect(cx + 2, cy - 145, 8, 4);
+
+      // Sensor domes / blisters
+      ctx.fillStyle = '#334155';
+      ctx.beginPath();
+      ctx.arc(cx - 8, cy - 134, 3, 0, Math.PI * 2);
+      ctx.arc(cx + 8, cy - 134, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Stencil: "EXETER" in crisp dark lettering
+      ctx.fillStyle = '#475569';
+      ctx.font = 'bold 7px monospace';
+      ctx.fillText('EXETER', cx - 14, cy - 122);
+
+      // (C) Forward Armored Collar / Structural Neck (cy - 115 to cy - 90, width 64px)
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(cx - 32, cy - 115, 64, 25);
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(cx - 28, cy - 112, 56, 19);
+
+      // Lateral antenna/ladder gantry trusses extending horizontally
+      // Left ladder gantry
+      ctx.fillStyle = '#475569';
+      ctx.fillRect(cx - 46, cy - 104, 14, 1.5);
+      ctx.fillRect(cx - 46, cy - 92, 14, 1.5);
+      for (let g = 0; g < 4; g++) {
+        ctx.fillRect(cx - 44 + g * 3.5, cy - 104, 1.5, 12);
+      }
+      // Right ladder gantry
+      ctx.fillRect(cx + 32, cy - 104, 14, 1.5);
+      ctx.fillRect(cx + 32, cy - 92, 14, 1.5);
+      for (let g = 0; g < 4; g++) {
+        ctx.fillRect(cx + 34 + g * 3.5, cy - 104, 1.5, 12);
+      }
+
+      // Collar Stencils: "ST-01"
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 7px monospace';
+      ctx.fillText('ST-01', cx - 12, cy - 100);
+      // Red warning stencil triangle
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.moveTo(cx + 16, cy - 104);
+      ctx.lineTo(cx + 20, cy - 97);
+      ctx.lineTo(cx + 12, cy - 97);
+      ctx.closePath();
+      ctx.fill();
+
+      // (D) Main Mid-Fuselage (cy - 90 to cy + 105, width 68px)
+      // Off-white modular composite plating
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(cx - 34, cy - 90, 68, 195);
+      ctx.fillStyle = '#f1f5f9';
+      ctx.fillRect(cx - 32, cy - 88, 30, 191);
+      ctx.fillRect(cx + 2, cy - 88, 30, 191);
+
+      // Panel Line Grid (Authentic modular spaceship seams)
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      // Centerline seam
+      ctx.moveTo(cx, cy - 90);
+      ctx.lineTo(cx, cy + 105);
+      // Cross panel seams
+      const crossY = [-65, -40, -15, 42, 65, 85];
+      for (let py of crossY) {
+        ctx.moveTo(cx - 34, cy + py);
+        ctx.lineTo(cx + 34, cy + py);
+      }
+      ctx.stroke();
+
+      // Observation Viewports on Right Hull Flank (matching reference photo)
+      const viewportY = [-32, 12, 32, 52, 72];
+      for (let vy of viewportY) {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx + 14, cy + vy, 9, 4);
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(cx + 15, cy + vy + 1, 3, 2);
+      }
+
+      // Flank Stabilizing Wings / Docking Guide Pylons (cy + 70 to cy + 96)
+      // Left wing pylon
+      ctx.fillStyle = '#cbd5e1';
+      ctx.beginPath();
+      ctx.moveTo(cx - 34, cy + 70);
+      ctx.lineTo(cx - 46, cy + 78);
+      ctx.lineTo(cx - 46, cy + 96);
+      ctx.lineTo(cx - 34, cy + 92);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(cx - 46, cy + 78, 2, 18);
+
+      // Right wing pylon
+      ctx.fillStyle = '#cbd5e1';
+      ctx.beginPath();
+      ctx.moveTo(cx + 34, cy + 70);
+      ctx.lineTo(cx + 46, cy + 78);
+      ctx.lineTo(cx + 46, cy + 96);
+      ctx.lineTo(cx + 34, cy + 92);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(cx + 44, cy + 78, 2, 18);
+
+      // (E) VEIRA LOGO ON THE SIDE FLANK (veira_pixel_24.png)
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(cx - 31, cy - 65, 26, 24);
+      ctx.strokeStyle = '#00e5ff';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(cx - 31, cy - 65, 26, 24);
+      if (veiraPixel24Loaded && veiraPixel24Img) {
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(veiraPixel24Img, cx - 29, cy - 63, 22, 20);
+      }
+      ctx.fillStyle = '#00e5ff';
+      ctx.font = 'bold 5px monospace';
+      ctx.fillText('VEIRA', cx - 27, cy - 38);
+
+      // (F) CENTRAL HANGAR BAY & SLIDING PORTONE (cy - 12 to cy + 38, width 52px)
+      const bayW = 52;
+      const bayH = 46;
+      const bayX = cx - bayW / 2;
+      const bayY = cy - 10;
+
+      // Illuminated Interior Flight Deck
+      ctx.fillStyle = '#030712';
+      ctx.fillRect(bayX, bayY, bayW, bayH);
+
+      // Runway Guidance Lights & Strobe LEDs
+      const rStrobe = Math.floor(m.timer / 6) % 3;
+      for (let r = 0; r < 3; r++) {
+        const ly = bayY + 8 + r * 12;
+        ctx.fillStyle = (r === rStrobe) ? '#ffffff' : '#00ff9d';
+        ctx.fillRect(bayX + 6, ly, 3, 3);
+        ctx.fillRect(bayX + bayW - 9, ly, 3, 3);
+      }
+      // Glowing Runway Centerline
+      ctx.fillStyle = 'rgba(0, 255, 157, 0.35)';
+      ctx.fillRect(cx - 1, bayY + 4, 2, bayH - 8);
+
+      // Yellow/Black Hazard Stripes on Top & Bottom Gate Lintels
+      for (let s = 0; s < bayW; s += 6) {
+        ctx.fillStyle = (Math.floor(s / 6) % 2 === 0) ? '#ffd700' : '#111827';
+        ctx.fillRect(bayX + s, bayY - 4, 4, 3);
+        ctx.fillRect(bayX + s, bayY + bayH + 1, 4, 3);
+      }
+
+      // Heavy Armored Sliding Blast Doors (The Portone)
+      const doorW = bayW / 2;
+      const openDist = (doorW + 2) * m.gateProgress;
+
+      // Left blast door
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(bayX - openDist, bayY, doorW, bayH);
+      ctx.strokeStyle = '#00e5ff';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(bayX - openDist, bayY, doorW, bayH);
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(bayX - openDist + 4, bayY + 6, doorW - 8, bayH - 12);
+      // Chevron indicator
+      ctx.fillStyle = (m.gateProgress > 0.5) ? '#00ff9d' : '#ffd700';
+      ctx.fillRect(bayX - openDist + doorW - 4, bayY + bayH / 2 - 4, 2, 8);
+
+      // Right blast door
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(bayX + doorW + openDist, bayY, doorW, bayH);
+      ctx.strokeStyle = '#00e5ff';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(bayX + doorW + openDist, bayY, doorW, bayH);
+      ctx.fillStyle = '#334155';
+      ctx.fillRect(bayX + doorW + openDist + 4, bayY + 6, doorW - 8, bayH - 12);
+      ctx.fillStyle = (m.gateProgress > 0.5) ? '#00ff9d' : '#ffd700';
+      ctx.fillRect(bayX + doorW + openDist + 2, bayY + bayH / 2 - 4, 2, 8);
+
+      // (G) Stern Engine Base Cowling (cy + 105 to cy + 138, width 76px)
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.moveTo(cx - 34, cy + 105);
+      ctx.lineTo(cx + 34, cy + 105);
+      ctx.lineTo(cx + 38, cy + 115);
+      ctx.lineTo(cx + 38, cy + 138);
+      ctx.lineTo(cx - 38, cy + 138);
+      ctx.lineTo(cx - 38, cy + 115);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Heat Dissipation Vents & Red Hazard Chevrons
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(cx - 32, cy + 120, 64, 12);
+      for (let v = 0; v < 8; v++) {
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(cx - 30 + v * 8, cy + 122, 5, 8);
+      }
+      ctx.fillStyle = '#ef4444';
+      ctx.fillRect(cx - 35, cy + 114, 3, 3);
+      ctx.fillRect(cx + 32, cy + 114, 3, 3);
+
+      // (H) THE 4 ROCKET ENGINE BELL NOZZLES (cy + 138 to cy + 155)
+      for (let i = 0; i < rocketCenters.length; i++) {
+        const bx = rocketCenters[i];
+        // Bell nozzle geometry: narrower top (width 10px), flared bottom (width 16px)
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.moveTo(bx - 5, cy + 138);
+        ctx.lineTo(bx + 5, cy + 138);
+        ctx.lineTo(bx + 8, cy + 155);
+        ctx.lineTo(bx - 8, cy + 155);
+        ctx.closePath();
+        ctx.fill();
+
+        // Metallic highlights & ribs
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = '#64748b';
+        ctx.fillRect(bx - 6, cy + 143, 12, 1.5);
+        ctx.fillRect(bx - 7, cy + 149, 14, 1.5);
+
+        // Glowing Throat Chamber Interior
+        ctx.fillStyle = isBlasting ? '#00e5ff' : '#0284c7';
+        ctx.fillRect(bx - 5, cy + 153, 10, 2);
+      }
+
+      ctx.restore();
+    }
+
+    function drawSupportJets(ctx) {
+      if (supportJets.length === 0) return;
+
+      const baseSprite = PLAYER_SPRITES[0];
+      const sprW = baseSprite[0].length * 2.2;
+      const sprH = baseSprite.length * 2.2;
+
+      for (let i = 0; i < supportJets.length; i++) {
+        const j = supportJets[i];
+        ctx.save();
+
+        const jx = Math.floor(j.x);
+        const jy = Math.floor(j.y);
+
+        // Flash white/red when taking damage
+        const isDamaged = j.flashTimer > 0 && (Math.floor(j.flashTimer / 2) % 2 === 0);
+        if (isDamaged) {
+          ctx.globalAlpha = 0.75;
+        }
+
+        // Micro-thruster exhaust
+        const flameY = jy + sprH / 2 - 2;
+        const flmH = 8 + Math.floor(Math.sin((gameTick + j.id * 10) * 0.4) * 3);
+        ctx.fillStyle = (j.id === 0) ? '#00e5ff' : '#00ff9d';
+        ctx.fillRect(jx - 5, flameY, 3, flmH);
+        ctx.fillRect(jx + 2, flameY, 3, flmH);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(jx - 4, flameY, 1, flmH - 2);
+        ctx.fillRect(jx + 3, flameY, 1, flmH - 2);
+
+        // Draw Player Fighter Jet Sprite
+        drawPixelBitmap(baseSprite, Math.floor(jx - sprW / 2), Math.floor(jy - sprH / 2), j.pixelSize, 1.0);
+
+        // Wingtip Formation Nav Lights
+        ctx.fillStyle = (j.id === 0) ? '#00e5ff' : '#00ff9d';
+        ctx.fillRect(jx - Math.floor(sprW / 2) - 1, jy, 2, 2);
+        ctx.fillRect(jx + Math.floor(sprW / 2) - 1, jy, 2, 2);
+
+        // 3-Pip Health Bar above Jet ("if they take 3x damage they explode")
+        const barW = 18;
+        const barX = jx - barW / 2;
+        const barY = jy - sprH / 2 - 8;
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+        ctx.fillRect(barX - 1, barY - 1, barW + 2, 6);
+
+        for (let p = 0; p < 3; p++) {
+          const pipX = barX + p * 6;
+          if (j.hp > p) {
+            if (j.hp === 3) ctx.fillStyle = '#00ff9d';
+            else if (j.hp === 2) ctx.fillStyle = '#ffd700';
+            else ctx.fillStyle = (Math.floor(gameTick / 4) % 2 === 0) ? '#ff2a5f' : '#ffffff';
+            ctx.fillRect(pipX, barY, 4, 4);
+          } else {
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(pipX, barY, 4, 4);
+          }
+        }
+
+        ctx.restore();
       }
     }
 
@@ -11080,7 +12450,7 @@
       ctx.globalAlpha = 1.0;
       // Hyperspace Warp Stars & Intro Particle Explosions
       if (isIntroActive) {
-        // Warp stars rushing forward
+        // Warp stars rushing forward as crisp pixel stars (no glitchy lines)
         for (let i = 0; i < introWarpStars.length; i++) {
           const ws = introWarpStars[i];
           ws.z -= 6.5;
@@ -11095,20 +12465,13 @@
           const py = ws.y * k + H / 2;
 
           if (px >= 0 && px < W && py >= 0 && py < H) {
-            const prevK = 320 / (ws.z + 18);
-            const prevX = ws.x * prevK + W / 2;
-            const prevY = ws.y * prevK + H / 2;
-
-            ctx.save();
-            ctx.strokeStyle = ws.color;
-            ctx.lineWidth = Math.min(3, Math.max(1, (1 - ws.z / W) * 3));
-            ctx.beginPath();
-            ctx.moveTo(prevX, prevY);
-            ctx.lineTo(px, py);
-            ctx.stroke();
-            ctx.restore();
+            const sz = ws.z < W * 0.25 ? 2 : 1;
+            ctx.globalAlpha = Math.min(1.0, Math.max(0.2, (1 - ws.z / W) * 1.2));
+            ctx.fillStyle = ws.color;
+            ctx.fillRect(Math.floor(px), Math.floor(py), sz, sz);
           }
         }
+        ctx.globalAlpha = 1.0;
 
         // Shockwave Sparks
         for (let i = introShockwaves.length - 1; i >= 0; i--) {
@@ -11208,6 +12571,9 @@
         }
       }
 
+      // 2b. Giant Allied Carrier Mothership
+      drawAlliedMothership(ctx);
+
       // 3. Player Fighter Ship (Shape Evolves With Each Defeated Boss!)
       if (isPlaying) {
         const isFlicker = player.invulnTimer > 0 && (Math.floor(player.invulnTimer / 4) % 2 === 0);
@@ -11255,6 +12621,9 @@
           }
         }
       }
+
+      // 3b. Escort Support Jets (Wingman Alpha & Beta)
+      drawSupportJets(ctx);
 
       // 4. Player Lasers (Crisp High-FPS Retro Lasers)
       for (let i = 0; i < playerLasers.length; i++) {
@@ -11492,10 +12861,522 @@
       requestAnimationFrame(gameLoop);
     }
 
+    // =======================================================
+    // COSMIC SPACE BACKGROUND & GALAXY-WISE ZOOM TRANSITION ENGINE
+    // =======================================================
+    let isTransitioningToGame = false;
+    let transitionAnimFrame = null;
+    let transitionStartTime = 0;
+    let cinematicAudioCtx = null;
+
+    // Helper to draw pixel sprite matrix onto any 2D canvas context
+    function drawSpriteOnContext(targetCtx, matrix, startX, startY, pixelSize, alpha = 1.0) {
+      if (!matrix || !matrix.length || alpha <= 0) return;
+      targetCtx.save();
+      targetCtx.globalAlpha = alpha;
+      const rows = matrix.length;
+      const cols = matrix[0].length;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const code = matrix[r][c];
+          if (code !== '_' && PALETTE[code]) {
+            targetCtx.fillStyle = PALETTE[code];
+            targetCtx.fillRect(
+              Math.floor(startX + c * pixelSize),
+              Math.floor(startY + r * pixelSize),
+              Math.ceil(pixelSize),
+              Math.ceil(pixelSize)
+            );
+          }
+        }
+      }
+      targetCtx.restore();
+    }
+
+    // Helper to draw spaceship ion thruster exhaust on any context
+    function drawSpaceShipThrusters(targetCtx, shipX, shipY, shipW, shipH, tick, boost = false) {
+      targetCtx.save();
+      const flameBaseY = Math.floor(shipY + shipH / 2 - 2);
+      const engineXOffsets = [-Math.floor(shipW * 0.22), Math.floor(shipW * 0.22)];
+      const flameH = boost ? (24 + Math.sin(tick * 0.6) * 10) : (11 + Math.sin(tick * 0.4) * 5);
+      for (let ox of engineXOffsets) {
+        const ex = Math.floor(shipX + ox);
+        // Outer cyan plasma
+        targetCtx.fillStyle = '#00e5ff';
+        targetCtx.fillRect(ex - 4, flameBaseY, 8, flameH);
+        // Inner mint core
+        targetCtx.fillStyle = '#00ff9d';
+        targetCtx.fillRect(ex - 2, flameBaseY, 4, flameH * 0.72);
+        // White-hot center
+        targetCtx.fillStyle = '#ffffff';
+        targetCtx.fillRect(ex - 1, flameBaseY, 2, flameH * 0.42);
+      }
+      targetCtx.restore();
+    }
+
+    // Audio Synthesizer for Galaxy-Wise Warp Flyby
+    function playCinematicAudio() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        cinematicAudioCtx = new AudioCtx();
+        const actx = cinematicAudioCtx;
+        const now = actx.currentTime;
+
+        // Sub-bass cosmic engine spool
+        const subOsc = actx.createOscillator();
+        const subGain = actx.createGain();
+        subOsc.type = 'sawtooth';
+        subOsc.frequency.setValueAtTime(45, now);
+        subOsc.frequency.exponentialRampToValueAtTime(180, now + 2.4);
+        subOsc.frequency.exponentialRampToValueAtTime(65, now + 3.4);
+        subGain.gain.setValueAtTime(0.01, now);
+        subGain.gain.linearRampToValueAtTime(0.38, now + 1.0);
+        subGain.gain.linearRampToValueAtTime(0.48, now + 2.8);
+        subGain.gain.exponentialRampToValueAtTime(0.001, now + 3.7);
+        subOsc.connect(subGain);
+        subGain.connect(actx.destination);
+        subOsc.start(now);
+        subOsc.stop(now + 3.75);
+
+        // High frequency warp galaxy whoosh
+        const sweepOsc = actx.createOscillator();
+        const sweepFilter = actx.createBiquadFilter();
+        const sweepGain = actx.createGain();
+        sweepOsc.type = 'triangle';
+        sweepOsc.frequency.setValueAtTime(110, now);
+        sweepOsc.frequency.exponentialRampToValueAtTime(1600, now + 2.2);
+        sweepOsc.frequency.exponentialRampToValueAtTime(3200, now + 3.2);
+        sweepFilter.type = 'bandpass';
+        sweepFilter.frequency.setValueAtTime(260, now);
+        sweepFilter.frequency.exponentialRampToValueAtTime(5200, now + 2.8);
+        sweepFilter.Q.setValueAtTime(4.0, now);
+        sweepGain.gain.setValueAtTime(0.01, now);
+        sweepGain.gain.linearRampToValueAtTime(0.35, now + 1.6);
+        sweepGain.gain.exponentialRampToValueAtTime(0.001, now + 3.7);
+        sweepOsc.connect(sweepFilter);
+        sweepFilter.connect(sweepGain);
+        sweepGain.connect(actx.destination);
+        sweepOsc.start(now);
+        sweepOsc.stop(now + 3.75);
+      } catch (e) {}
+    }
+
+    function stopCinematicAudio() {
+      if (cinematicAudioCtx) {
+        try {
+          cinematicAudioCtx.close();
+        } catch (e) {}
+        cinematicAudioCtx = null;
+      }
+    }
+
+    function openFullscreenGame(preserveStars = false, isZooming = false) {
+      if (!arcadeWrapper) return;
+
+      // Fully occlude site navbar and bars
+      document.body.classList.add('space-fighter-active');
+      document.body.style.overflow = 'hidden';
+      if (siteNavbar) siteNavbar.style.display = 'none';
+      if (siteScrollProgress) siteScrollProgress.style.display = 'none';
+
+      arcadeWrapper.classList.add('fullscreen-mode');
+      if (isZooming) {
+        arcadeWrapper.classList.add('in-cinematic-zoom');
+      }
+      resizeGame();
+
+      // Start combat immediately with zero intro text and smooth transition
+      if (!isPlaying && !isZooming) {
+        startGame(preserveStars);
+      }
+    }
+
+    function closeFullscreenGame() {
+      if (!arcadeWrapper) return;
+      if (transitionAnimFrame) {
+        cancelAnimationFrame(transitionAnimFrame);
+        transitionAnimFrame = null;
+      }
+      stopCinematicAudio();
+      if (transitionStage) {
+        transitionStage.style.display = 'none';
+        transitionStage.style.opacity = '1';
+      }
+      isTransitioningToGame = false;
+      arcadeWrapper.classList.remove('in-cinematic-zoom');
+      arcadeWrapper.classList.add('fullscreen-closing');
+
+      setTimeout(() => {
+        arcadeWrapper.classList.remove('fullscreen-mode');
+        arcadeWrapper.classList.remove('fullscreen-closing');
+        document.body.classList.remove('space-fighter-active');
+        document.body.style.overflow = '';
+        if (siteNavbar) siteNavbar.style.display = '';
+        if (siteScrollProgress) siteScrollProgress.style.display = '';
+
+        stopChiptuneBGM();
+        isPlaying = false;
+        resizeGame();
+
+        if (spaceFighterCover) {
+          spaceFighterCover.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 260);
+    }
+
+    function endCinematicTransition() {
+      if (transitionAnimFrame) {
+        cancelAnimationFrame(transitionAnimFrame);
+        transitionAnimFrame = null;
+      }
+      stopCinematicAudio();
+      if (transitionStage) {
+        transitionStage.style.display = 'none';
+        transitionStage.style.opacity = '1';
+      }
+      if (arcadeWrapper) {
+        arcadeWrapper.classList.remove('in-cinematic-zoom');
+      }
+      isTransitioningToGame = false;
+      openFullscreenGame(true, false);
+    }
+
+    // =======================================================
+    // CINEMATIC ZOOM ANIMATION:
+    // Seamless cosmic zoom into deep space through the starfield into the minigame
+    // =======================================================
+    function startCinematic5sLaunch() {
+      if (isTransitioningToGame) return;
+      isTransitioningToGame = true;
+
+      unlockAudio();
+
+      // Occlude site immediately and open arcade arena behind transition overlay
+      document.body.classList.add('space-fighter-active');
+      document.body.style.overflow = 'hidden';
+      if (siteNavbar) siteNavbar.style.display = 'none';
+      if (siteScrollProgress) siteScrollProgress.style.display = 'none';
+
+      openFullscreenGame(true, true);
+
+      if (transitionStage) {
+        transitionStage.style.display = 'block';
+        transitionStage.style.opacity = '1';
+      }
+
+      playCinematicAudio();
+
+      if (!transitionCanvas) {
+        setTimeout(endCinematicTransition, 3500);
+        return;
+      }
+
+      const tCtx = transitionCanvas.getContext('2d');
+      let TW = window.innerWidth;
+      let TH = window.innerHeight;
+      transitionCanvas.width = TW;
+      transitionCanvas.height = TH;
+
+      // 3D Warp Stars focusing toward deep space on the left
+      // Primary stars match the minigame bgStars density 1:1
+      const warpStars = [];
+      const primaryCount = Math.max(48, Math.min(64, Math.floor((TW * TH) / (600 * 520) * 48)));
+      const totalWarpStars = primaryCount + 80;
+
+      for (let i = 0; i < totalWarpStars; i++) {
+        const isPrimary = i < primaryCount;
+        warpStars.push({
+          isPrimary: isPrimary,
+          x: (Math.random() - 0.5) * 2400,
+          y: (Math.random() - 0.5) * 2400,
+          z: Math.random() * 950 + 50,
+          color: Math.random() < 0.35 ? '#00e5ff' : '#ffffff',
+          size: Math.random() < 0.25 ? 2 : 1,
+          alpha: Math.random() * 0.6 + 0.3,
+          speed: Math.random() * 1.5 + 0.5,
+          driftY: 0,
+          currentScreenX: 0,
+          currentScreenY: 0
+        });
+      }
+
+      transitionStartTime = performance.now();
+      const DURATION = 3800; // 3.8 seconds dynamic zoom and smooth deceleration
+
+      function renderGalaxyZoomFrame(now) {
+        const elapsed = now - transitionStartTime;
+        const progress = Math.min(1.0, elapsed / DURATION);
+
+        TW = window.innerWidth;
+        TH = window.innerHeight;
+        if (transitionCanvas.width !== TW || transitionCanvas.height !== TH) {
+          transitionCanvas.width = TW;
+          transitionCanvas.height = TH;
+        }
+
+        // Camera zooms forward into deep cosmos (centered vanishing point)
+        const targetSideX = TW * 0.50;
+        const targetSideY = TH * 0.50;
+
+        // Subtle camera tremor during peak warp speed (progress 0.30 -> 0.62)
+        let shakeX = 0, shakeY = 0;
+        if (progress > 0.30 && progress < 0.62) {
+          const shakeFactor = Math.sin(((progress - 0.30) / 0.32) * Math.PI) * 4.5;
+          shakeX = (Math.random() - 0.5) * shakeFactor;
+          shakeY = (Math.random() - 0.5) * shakeFactor;
+        }
+
+        // Clear Deep Space (1:1 identical with other 2 backgrounds: #06080d)
+        tCtx.fillStyle = '#06080d';
+        tCtx.fillRect(0, 0, TW, TH);
+
+        // Deceleration & alignment curves (progress 0.60 -> 1.0)
+        let pDecel = 0;
+        let easeDecel = 0;
+        let warpSpeed = 10 + Math.pow(progress, 2.5) * 260;
+
+        if (progress >= 0.60) {
+          pDecel = (progress - 0.60) / 0.40;
+          easeDecel = 1.0 - Math.pow(1.0 - pDecel, 3);
+          warpSpeed = Math.pow(1.0 - pDecel, 2.6) * 120;
+        }
+
+        // Calculate game canvas offset relative to window
+        const canvasRect = canvas ? canvas.getBoundingClientRect() : { top: 0 };
+        const offsetY = Math.max(0, Math.floor(canvasRect.top || 0));
+
+        // 1. Warp Stars Accelerating and Decelerating into Minigame Background (CRISP PIXEL STARS ONLY - NO LINES)
+        for (let i = 0; i < warpStars.length; i++) {
+          const s = warpStars[i];
+
+          // Secondary stars fade out during deceleration, leaving crisp minigame star density
+          let starAlpha = s.alpha;
+          if (!s.isPrimary && progress >= 0.60) {
+            starAlpha *= (1.0 - pDecel);
+            if (starAlpha <= 0.01) continue;
+          }
+
+          // Advance along Z while warp is active
+          if (warpSpeed > 0.1) {
+            s.z -= warpSpeed * 0.18;
+            if (s.z <= 12) {
+              s.z = 1000;
+              s.x = (Math.random() - 0.5) * 2400;
+              s.y = (Math.random() - 0.5) * 2400;
+            }
+          }
+
+          const k = 440 / s.z;
+          let sx = targetSideX + s.x * k + shakeX;
+          let sy = targetSideY + s.y * k + shakeY;
+
+          // Downward vertical drift takes over smoothly as radial warp contracts
+          if (progress >= 0.55) {
+            const driftBlend = (progress - 0.55) / 0.45;
+            s.driftY += s.speed * Math.pow(driftBlend, 1.4) * 1.5;
+            sy += s.driftY;
+          }
+
+          // Screen boundary wrap for downward drifting stars
+          if (sy > TH + 4) {
+            sy = -4;
+            s.driftY = 0;
+            s.y = (sy - targetSideY) / Math.max(0.01, k);
+            s.x = (Math.random() - 0.5) * (TW / Math.max(0.01, k));
+          }
+
+          s.currentScreenX = sx;
+          s.currentScreenY = sy;
+
+          if (sx >= -4 && sx <= TW + 4 && sy >= -4 && sy <= TH + 4) {
+            // Brighten slightly as star approaches
+            const closeGlow = s.z < 350 ? (1 - s.z / 350) * 0.35 : 0;
+            tCtx.globalAlpha = Math.min(1.0, starAlpha + closeGlow);
+            tCtx.fillStyle = s.color;
+            tCtx.fillRect(Math.floor(sx), Math.floor(sy), s.size, s.size);
+          }
+        }
+        tCtx.globalAlpha = 1.0;
+
+
+        // 3. Smooth HUD illumination & Background Star sync (Progress >= 0.72)
+        if (progress >= 0.72) {
+          if (arcadeWrapper && arcadeWrapper.classList.contains('in-cinematic-zoom')) {
+            arcadeWrapper.classList.remove('in-cinematic-zoom');
+          }
+
+          // Continuously synchronize bgStars so the minigame canvas matches 1:1
+          const synchedStars = [];
+          for (let i = 0; i < warpStars.length; i++) {
+            const ws = warpStars[i];
+            if (!ws.isPrimary) continue;
+            let gy = ws.currentScreenY - offsetY;
+            while (gy < 0) gy += H;
+            while (gy >= H) gy -= H;
+            let gx = ws.currentScreenX;
+            while (gx < 0) gx += W;
+            while (gx >= W) gx -= W;
+            synchedStars.push({
+              x: gx,
+              y: gy,
+              speed: ws.speed,
+              size: ws.size,
+              color: ws.color,
+              alpha: ws.alpha
+            });
+          }
+          if (synchedStars.length > 0) {
+            bgStars = synchedStars;
+          }
+        }
+
+        // 4. Subtle cyan warp luminescence pulse (sci-fi warp bubble finish, NOT opaque white)
+        if (progress >= 0.88 && progress < 0.98) {
+          const pulse = Math.sin(((progress - 0.88) / 0.10) * Math.PI);
+          tCtx.fillStyle = `rgba(0, 229, 255, ${pulse * 0.10})`;
+          tCtx.fillRect(0, 0, TW, TH);
+        }
+
+        // 5. Seamless Crossfade into minigame canvas
+        if (progress >= 0.85 && transitionStage) {
+          const crossfadeAlpha = Math.max(0, 1.0 - (progress - 0.85) / 0.15);
+          transitionStage.style.opacity = String(crossfadeAlpha);
+        }
+
+        if (progress >= 1.0) {
+          endCinematicTransition();
+        } else {
+          transitionAnimFrame = requestAnimationFrame(renderGalaxyZoomFrame);
+        }
+      }
+
+      transitionAnimFrame = requestAnimationFrame(renderGalaxyZoomFrame);
+    }
+
+    // =======================================================
+    // FULL-SECTION MAIN MENU COVER:
+    // Background identical 1:1 to the minigame space background (#06080d, same stars, same speed)
+    // =======================================================
+    function initPlanetCover() {
+      if (!planetCanvas || !arcadeSection) return;
+      const pCtx = planetCanvas.getContext('2d');
+
+      let PW = 800;
+      let PH = 480;
+      let coverStars = [];
+      let pTime = 0;
+      let isVisible = true;
+
+      function resizePlanetCanvas() {
+        const rect = arcadeSection.getBoundingClientRect();
+        const fullW = Math.max(320, Math.floor(rect.width || window.innerWidth));
+        const fullH = Math.max(400, Math.floor(rect.height || 740));
+
+        // 1:1 Pixel Canvas Dimensions matching minigame game-canvas
+        PW = fullW;
+        PH = fullH;
+        planetCanvas.width = PW;
+        planetCanvas.height = PH;
+
+        // Background stars matching the minigame starfield 1:1
+        coverStars = [];
+        const starCount = Math.max(48, Math.floor((PW * PH) / (600 * 520) * 48));
+        for (let i = 0; i < starCount; i++) {
+          coverStars.push({
+            x: Math.random() * PW,
+            y: Math.random() * PH,
+            speed: Math.random() * 1.5 + 0.5,
+            size: Math.random() < 0.25 ? 2 : 1,
+            color: Math.random() < 0.35 ? '#00e5ff' : '#ffffff',
+            alpha: Math.random() * 0.6 + 0.3
+          });
+        }
+      }
+
+      resizePlanetCanvas();
+      window.addEventListener('resize', resizePlanetCanvas);
+
+      if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            isVisible = entry.isIntersecting;
+          });
+        }, { threshold: 0.05 });
+        obs.observe(arcadeSection);
+      }
+
+      function renderPlanetFrame() {
+        if (!isVisible) {
+          requestAnimationFrame(renderPlanetFrame);
+          return;
+        }
+
+        pTime += 0.02;
+
+        // 1:1 Minigame background fill (#06080d)
+        pCtx.fillStyle = '#06080d';
+        pCtx.fillRect(0, 0, PW, PH);
+
+        // Starfield (1:1 identical to minigame bgStars update and rendering)
+        for (let i = 0; i < coverStars.length; i++) {
+          const s = coverStars[i];
+          s.y += s.speed;
+          if (s.y > PH) {
+            s.y = 0;
+            s.x = Math.random() * PW;
+          }
+
+          pCtx.globalAlpha = s.alpha;
+          pCtx.fillStyle = s.color;
+          pCtx.fillRect(Math.floor(s.x), Math.floor(s.y), s.size, s.size);
+        }
+        pCtx.globalAlpha = 1.0;
+
+
+        requestAnimationFrame(renderPlanetFrame);
+      }
+
+      renderPlanetFrame();
+    }
+
+    // Hook up Space Fighter Cover Click Transition ("PRESS TO PLAY")
+    if (spaceFighterCover) {
+      spaceFighterCover.addEventListener('click', function() {
+        startCinematic5sLaunch();
+      });
+
+      spaceFighterCover.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          startCinematic5sLaunch();
+        }
+      });
+    }
+
+    // Hook up Exit Game Demo Button
+    if (exitGameDemoBtn) {
+      exitGameDemoBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        closeFullscreenGame();
+      });
+    }
+
+    // Keyboard controls for transition skip
+    window.addEventListener('keydown', function(e) {
+      if (isTransitioningToGame) {
+        if (e.key === ' ' || e.key === 'Escape' || e.key === 'Enter') {
+          e.preventDefault();
+          endCinematicTransition();
+        }
+      }
+    });
+
     // Initial Setup
     resizeGame();
     initBgStars();
     updateHeartsHUD();
+    initPlanetCover();
     requestAnimationFrame(gameLoop);
   })();
   </script>
